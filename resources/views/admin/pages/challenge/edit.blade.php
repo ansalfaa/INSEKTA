@@ -1,4 +1,4 @@
-@extends('layouts.admin.app')
+@extends('layouts.admin.app',['hideHeader' => true, 'hideSidebarRight' => true])
 
 @section('title', 'Edit Challenge')
 
