@@ -11,7 +11,7 @@ class PengumumanGlobal extends Model
     use HasFactory;
 
     protected $table = 'pengumuman_globals'; // Nama tabel
-    protected $primaryKey = 'id_pengumuman'; // Primary Key
+    protected $primaryKey = 'id'; // Primary Key
     public $incrementing = true; // Pastikan auto-increment aktif
     public $timestamps = true; // Hanya ada created_at
 

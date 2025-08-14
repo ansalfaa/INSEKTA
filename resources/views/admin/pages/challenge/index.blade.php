@@ -4,6 +4,12 @@
 
 @section('content')
     <div class="p-4 sm:p-6 lg:p-8">
+
+        @if (session('success'))
+            <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 flex items-center shadow">
+                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            </div>
+        @endif
         <!-- Replaced standalone HTML with admin layout extension -->
         <!-- Header Section -->
         <div class="mb-6">
@@ -17,10 +23,11 @@
                         <p class="text-sm text-gray-600">Kelola semua challenge yang tersedia</p>
                     </div>
                 </div>
-                <a href="{{ route('admin.challenge.create') }}"
+                <button onclick="openModal()"
                     class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary-amber to-orange-500 text-white rounded-lg hover:from-orange-500 hover:to-primary-amber transition-all duration-300 font-medium shadow-md hover:shadow-lg text-sm">
                     <i class="fas fa-plus mr-2"></i>Tambah Challenge
-                </a>
+                </button>
+
             </div>
         </div>
 
@@ -172,4 +179,33 @@
             @endif
         </div>
     </div>
+
+    <!-- Modal -->
+    <div id="createChallengeModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl">
+            <div class="bg-gradient-to-r from-primary-amber to-orange-500 p-4">
+                <h2 class="text-lg font-semibold text-white flex items-center">
+                    <i class="fas fa-plus-circle mr-2"></i> 
+                    Form Challenge Baru
+                </h2>
+            </div>
+
+            @include('admin.pages.challenge.create')
+        </div>
+    </div>
+
 @endsection
+
+@push('scripts')
+    <script>
+        function openModal() {
+            document.getElementById('createChallengeModal').classList.remove('hidden');
+            document.getElementById('createChallengeModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('createChallengeModal').classList.add('hidden');
+            document.getElementById('createChallengeModal').classList.remove('flex');
+        }
+    </script>
+@endpush
