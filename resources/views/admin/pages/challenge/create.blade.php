@@ -18,13 +18,13 @@
                     <i class="fas fa-heading text-primary-amber mr-2"></i>
                     Judul Challenge
                 </label>
-                <input type="text" name="judul" value="{{ old('judul') }}" 
+                <input type="text" name="judul" value="{{ old('judul') }}"
                     placeholder="Masukkan judul challenge..."
                     class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
-                @error('judul') 
+                @error('judul')
                     <p class="text-sm text-red-500 mt-1 flex items-center">
-                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                    </p> 
+                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                    </p>
                 @enderror
             </div>
 
@@ -34,13 +34,12 @@
                     <i class="fas fa-align-left text-primary-amber mr-2"></i>
                     Deskripsi
                 </label>
-                <textarea name="deskripsi" rows="4" 
-                    placeholder="Jelaskan detail challenge..."
+                <textarea name="deskripsi" rows="4" placeholder="Jelaskan detail challenge..."
                     class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none resize-none text-sm">{{ old('deskripsi') }}</textarea>
-                @error('deskripsi') 
+                @error('deskripsi')
                     <p class="text-sm text-red-500 mt-1 flex items-center">
                         <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                    </p> 
+                    </p>
                 @enderror
             </div>
 
@@ -51,13 +50,12 @@
                     Poin
                 </label>
                 <input type="number" name="poin" value="{{ old('poin') }}"
-                    placeholder="Masukkan poin challenge..."
-                    min="0"
+                    placeholder="Masukkan poin challenge..." min="0"
                     class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
-                @error('poin') 
+                @error('poin')
                     <p class="text-sm text-red-500 mt-1 flex items-center">
                         <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                    </p> 
+                    </p>
                 @enderror
             </div>
 
@@ -69,10 +67,10 @@
                 </label>
                 <input type="date" name="deadline" value="{{ old('deadline') }}"
                     class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
-                @error('deadline') 
+                @error('deadline')
                     <p class="text-sm text-red-500 mt-1 flex items-center">
                         <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                    </p> 
+                    </p>
                 @enderror
             </div>
 

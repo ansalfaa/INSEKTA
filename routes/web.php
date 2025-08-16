@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/{challenge}', [ChallengeController::class, 'update'])->name('update');
             Route::delete('/{challenge}', [ChallengeController::class, 'destroy'])->name('destroy');
         });
+        
         // Route untuk konten (postingan)
         Route::get('/konten', [App\Http\Controllers\PostinganController::class, 'index'])->name('konten.index');
         Route::get('/konten/{id}', [App\Http\Controllers\PostinganController::class, 'show'])->name('konten.show');

@@ -44,22 +44,38 @@ class AdminController extends Controller
     {
         // Query + relasi siswa/guru + filter role + search
         $query = User::with('role', 'siswa.kelas', 'siswa.jurusan', 'guru')
-            ->when($request->role, fn($q) => $q->where('role_id', $request->role))
+            ->when($request->role, fn($q) => $q->whereHas('role', fn($r) => $r->where('nama_role', $request->role)))
             ->when($request->search, fn($q) => $q->where(
                 fn($sub) =>
                 $sub->where('username', 'like', "%{$request->search}%")
                     ->orWhere('nama_lengkap', 'like', "%{$request->search}%")
             ));
 
+        $users = $query->paginate(10);
+
         // Ambil pengumuman terbaru juga supaya sidebar tidak error
         $pengumumanGlobals = PengumumanGlobal::latest()->take(5)->get();
 
+        // Tambahkan perhitungan statistik (tidak terpengaruh filter)
+        $rolesCount = [
+            'admin' => User::where('role_id', self::ROLE_ADMIN)->count(),
+            'guru'  => User::where('role_id', self::ROLE_GURU)->count(),
+            'siswa' => User::where('role_id', self::ROLE_SISWA)->count(),
+        ];
+
+        $totalUsers = User::count();
+
         return view('admin.pages.users.index', [
-            'users' => $query->paginate(10),
+            'users' => $users,
             'roles' => Role::all(),
-            'pengumumanGlobals' => $pengumumanGlobals, // kirim ke view
+            'jurusans' => Jurusan::all(),
+            'kelases' => Kelas::all(),
+            'pengumumanGlobals' => $pengumumanGlobals,
+            'rolesCount' => $rolesCount,  // ⬅️ kirim ke view
+            'totalUsers' => $totalUsers,  // ⬅️ kirim ke view
         ]);
     }
+
 
     // Filter User berdasarkan Role
     public function filterByRole($role)
