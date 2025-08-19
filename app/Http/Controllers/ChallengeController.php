@@ -84,7 +84,19 @@ class ChallengeController extends Controller
 
   public function show(Challenge $challenge)
   {
-    return view('admin.pages.challenge.show', compact('challenge'));
+    // contoh dummy data dulu (belum ada relasi peserta)
+    $peserta = collect(); // collection kosong
+    $totalPeserta = 0;
+    $sudahSubmit = 0;
+    $belumSubmit = 0;
+    
+
+    return view('admin.pages.challenge.show', compact(
+      'challenge',
+      'peserta',
+      'totalPeserta',
+      'sudahSubmit',
+      'belumSubmit'
+    ));
   }
-  
 }

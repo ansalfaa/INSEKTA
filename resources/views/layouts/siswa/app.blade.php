@@ -1,54 +1,66 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'INSEKTA Dashboard')</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>@yield('title', 'INSEKTA') - Sistem Informasi Sekolah</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body class="bg-gradient-to-br from-light-amber via-accent-amber/30 to-light-amber/20 min-h-screen font-sans">
-    <div id="dashboard-wrapper" class="flex min-h-screen relative">
-        <!-- Overlay untuk Sidebar Mobile -->
-        <div id="sidebar-overlay" class="sidebar-overlay md:hidden"></div>
-
+<body class="h-full bg-gradient-to-br from-amber-50 via-white to-amber-100/30 font-sans antialiased">
+    <div class="min-h-full flex">
         <!-- Sidebar Kiri -->
         @include('components.siswa.sidebar')
 
-        <!-- Main Content -->
-        <main class="flex flex-1 flex-col relative bg-light-amber/50">
-
-            <!-- Header -->
-            @include('components.siswa.header')
-
-            <!-- Konten Utama -->
-            <div class="flex flex-col lg:flex-row flex-1 p-4 lg:p-6 gap-6">
-
-                <!-- Feed Postingan -->
-                <div class="w-full lg:w-2/3 order-2 lg:order-1 bg-white rounded-xl shadow-lg p-4 lg:p-6">
-                    @yield('content')
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <main class="flex-1 flex">
+                <!-- Konten Utama -->
+                <div class="flex-1 overflow-y-auto">
+                    <div class="max-w-4xl mx-auto">
+                        @yield('content')
+                    </div>
                 </div>
 
-                <!-- Sidebar Kanan -->
-                <div class="w-full lg:w-1/3 order-1 lg:order-2">
-                    @include('components.siswa.right-sidebar')
-                </div>
-            </div>
-
-            <!-- Tombol Buat Postingan -->
-            @include('components.siswa.floating-action-button')
-
-
-            <!-- Serch Sidebar -->
-            @include('components.siswa.search-sidebar')
-
-        </main>
+                <!-- Sidebar Kanan (hanya tampil jika tidak di-hide) -->
+                @unless(!empty($hideSidebarRight) && $hideSidebarRight)
+                    <div class="hidden xl:block w-80 flex-shrink-0">
+                        @include('components.siswa.right-sidebar')
+                    </div>
+                @endunless
+            </main>
+        </div>
     </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden">
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar-left');
+            const overlay = document.getElementById('mobile-menu-overlay');
+
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Close mobile menu when clicking overlay
+        document.getElementById('mobile-menu-overlay')
+            .addEventListener('click', toggleMobileMenu);
+    </script>
 </body>
 
 </html>

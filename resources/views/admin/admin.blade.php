@@ -3,77 +3,128 @@
 @section('title', 'Dashboard Admin')
 
 @section('content')
-    {{-- Ringkasan statistik utama --}}
-    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-3">
-        {{-- Total Users --}}
-        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-blue-100 text-xs">Total Users</p>
-                    <p class="text-2xl font-semibold">{{ $totalUsers ?? 0 }}</p>
-                </div>
-                <i class="fas fa-users text-xl text-blue-200"></i>
+    <div class="max-w-3xl mx-auto px-4">
+        {{-- Header Section --}}
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
+                <h1 class="text-2xl font-bold text-amber-900 mb-2">Dashboard Overview</h1>
+                <p class="text-amber-700">Welcome back! Here's what's happening with your platform today.</p>
             </div>
         </div>
 
-        {{-- Aktif Hari Ini --}}
-        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-green-100 text-xs">Aktif Hari Ini</p>
-                    <p class="text-2xl font-semibold">{{ rand(50, 150) }}</p>
+        {{-- Main Statistics Cards --}}
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {{-- Total Users --}}
+            <div class="group hover:scale-105 transition-all duration-300">
+                <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg p-4 text-white shadow-md hover:shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-amber-100 text-xs font-medium">Total Users</p>
+                            <p class="text-2xl font-bold mt-1">{{ $totalUsers ?? 0 }}</p>
+                            <span class="text-amber-200 text-xs">↗ +12% dari bulan lalu</span>
+                        </div>
+                        <div class="bg-amber-400/20 rounded-full p-2">
+                            <i class="fas fa-users text-xl text-amber-100"></i>
+                        </div>
+                    </div>
                 </div>
-                <i class="fas fa-chart-line text-xl text-green-200"></i>
+            </div>
+
+            {{-- Aktif Hari Ini --}}
+            <div class="group hover:scale-105 transition-all duration-300">
+                <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-4 text-white shadow-md hover:shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-100 text-xs font-medium">Aktif Hari Ini</p>
+                            <p class="text-2xl font-bold mt-1">{{ rand(50, 150) }}</p>
+                            <span class="text-orange-200 text-xs">↗ +8% dari kemarin</span>
+                        </div>
+                        <div class="bg-orange-400/20 rounded-full p-2">
+                            <i class="fas fa-chart-line text-xl text-orange-100"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        {{-- Status Sistem --}}
-        <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-purple-100 text-xs">Sistem Status</p>
-                    <p class="text-lg font-semibold">Normal</p>
+        {{-- Form pengumuman --}}
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-amber-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+                    <h3 class="text-lg font-semibold text-white">Quick Actions</h3>
                 </div>
-                <i class="fas fa-server text-xl text-purple-200"></i>
+                <div class="p-6">
+                    @include('components.admin.create-pengumuman')
+                </div>
             </div>
         </div>
-    </div>
 
-    {{-- Form pengumuman --}}
-    <div class="mb-4">
-        @include('components.admin.create-pengumuman')
-    </div>
-
-    {{-- Statistik tambahan --}}
-    <div>
-        <h2 class="text-lg font-semibold text-gray-900 mb-3">Ringkasan Statistik</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {{-- Total Diskusi --}}
-            <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg p-4 text-white">
-                <p class="text-indigo-100 text-xs">Total Diskusi</p>
-                <p class="text-2xl font-semibold">{{ $totalDiskusi ?? 0 }}</p>
-                <i class="fas fa-users text-xl text-indigo-200 mt-1"></i>
+        {{-- Detailed Statistics --}}
+        <div>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-900">Detailed Analytics</h2>
             </div>
 
-            {{-- Total Post --}}
-            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
-                <p class="text-yellow-100 text-xs">Total Post</p>
-                <p class="text-2xl font-semibold">{{ $totalPosts ?? 0 }}</p>
-                <i class="fas fa-pencil-alt text-xl text-yellow-200 mt-1"></i>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {{-- Total Diskusi --}}
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-amber-100 rounded-lg p-3">
+                            <i class="fas fa-comments text-amber-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">+5.2%</span>
+                    </div>
+                    <p class="text-gray-600 text-sm font-medium">Total Diskusi</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $totalDiskusi ?? 0 }}</p>
+                    <div class="mt-3 h-1 bg-gray-200 rounded-full">
+                        <div class="h-1 bg-amber-500 rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
 
-            {{-- Challenge Aktif --}}
-            <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg p-4 text-white">
-                <p class="text-pink-100 text-xs">Challenge Aktif</p>
-                <p class="text-2xl font-semibold">{{ $activeChallenges ?? 0 }}</p>
-                <i class="fas fa-trophy text-xl text-pink-200 mt-1"></i>
-            </div>
+                {{-- Total Post --}}
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-orange-100 rounded-lg p-3">
+                            <i class="fas fa-pencil-alt text-orange-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">+12.1%</span>
+                    </div>
+                    <p class="text-gray-600 text-sm font-medium">Total Post</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $totalPosts ?? 0 }}</p>
+                    <div class="mt-3 h-1 bg-gray-200 rounded-full">
+                        <div class="h-1 bg-orange-500 rounded-full" style="width: 60%"></div>
+                    </div>
+                </div>
 
-            {{-- Pengumuman --}}
-            <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg p-4 text-white">
-                <p class="text-teal-100 text-xs">Pengumuman</p>
-                <p class="text-2xl font-semibold">{{ $leaderboardCount ?? 0 }}</p>
-                <i class="fas fa-chart-bar text-xl text-teal-200 mt-1"></i>
+                {{-- Challenge Aktif --}}
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-yellow-100 rounded-lg p-3">
+                            <i class="fas fa-trophy text-yellow-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <p class="text-gray-600 text-sm font-medium">Challenge Aktif</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $activeChallenges ?? 0 }}</p>
+                    <div class="mt-3 h-1 bg-gray-200 rounded-full">
+                        <div class="h-1 bg-yellow-500 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+
+                {{-- Pengumuman --}}
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-amber-100 rounded-lg p-3">
+                            <i class="fas fa-bullhorn text-amber-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">Recent</span>
+                    </div>
+                    <p class="text-gray-600 text-sm font-medium">Pengumuman</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $leaderboardCount ?? 0 }}</p>
+                    <div class="mt-3 h-1 bg-gray-200 rounded-full">
+                        <div class="h-1 bg-amber-500 rounded-full" style="width: 85%"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
