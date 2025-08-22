@@ -10,7 +10,7 @@
     <!-- Body -->
     <div class="p-6 space-y-4">
         <p class="text-gray-700">
-            Yakin ingin menghapus pengumuman 
+            Yakin ingin menghapus pengumuman?
             <span class="font-semibold text-amber-600" id="deleteJudul">Judul</span>?
         </p>
     </div>
