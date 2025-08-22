@@ -80,4 +80,15 @@ class Postingan extends Model
                 ->orWhere('user_id', $user->id);
         });
     }
+    // Relasi ke Jurusan
+    public function jurusan(): BelongsTo
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
+
+    // Relasi ke Kelas
+    public function kelas(): BelongsTo
+    {
+        return $this->belongsTo(Kelas::class);
+    }
 }

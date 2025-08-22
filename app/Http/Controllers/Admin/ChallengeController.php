@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Challenge;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class ChallengeController extends Controller
    */
   public function index()
   {
-    $challenges = Challenge::latest()->get();
+    $challenges = Challenge::withCount('peserta')->latest()->paginate(10);
     return view('admin.pages.challenge.index', compact('challenges'));
   }
 

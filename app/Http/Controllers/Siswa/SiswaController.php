@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Siswa;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Postingan;
@@ -45,7 +46,7 @@ class SiswaController extends Controller
         }
 
         // Ambil semua postingan terbaru
-        $postingan = $query->latest()->get();
+        $postingan = $query->latest()->paginate(10);
 
         // Ambil semua pengumuman global terbaru
         $pengumumanGlobals = PengumumanGlobal::latest()->get();
@@ -116,5 +117,10 @@ class SiswaController extends Controller
     public function leaderboard()
     {
         return view('siswa.pages.leaderboard');
+    }
+
+    public function profile()
+    {
+        return view('siswa.pages.profile');
     }
 }

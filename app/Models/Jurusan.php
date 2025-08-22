@@ -14,4 +14,10 @@ class Jurusan extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    // Tambahkan relasi ke postingan
+    public function postingans(): HasMany
+    {
+        return $this->hasMany(Postingan::class);
+    }
 }

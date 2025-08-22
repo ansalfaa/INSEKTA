@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Guru;
 
+
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth; // Untuk mengakses autentikasi user
 
 class GuruController extends Controller

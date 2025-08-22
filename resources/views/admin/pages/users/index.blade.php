@@ -5,9 +5,44 @@
 @section('title', 'Manajemen User')
 
 @section('content')
+
+    {{-- Toast Notifikasi --}}
+    @if (session('success'))
+        <div id="toastSuccess"
+            class="fixed top-5 right-5 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-slide-in">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+
+        <script>
+            // otomatis hilang setelah 3 detik
+            setTimeout(() => {
+                document.getElementById('toastSuccess').classList.add('hidden');
+            }, 3000);
+        </script>
+
+        <style>
+            @keyframes slide-in {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .animate-slide-in {
+                animation: slide-in 0.4s ease-out;
+            }
+        </style>
+    @endif
+
+
+
     <div class="space-y-6 font-poppins">
-
-
 
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-4">
@@ -219,14 +254,11 @@
                                         $user->id !== auth()->id() &&
                                             ($user->role_id !== \App\Http\Controllers\Admin\UserController::ROLE_SUPER_ADMIN ||
                                                 auth()->user()->role_id === \App\Http\Controllers\Admin\UserController::ROLE_SUPER_ADMIN))
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
-                                            class="inline">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800"
-                                                onclick="return confirm('Yakin ingin menghapus user {{ $user->username }}?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                            onclick="openDeleteUserModal({{ $user->id }}, '{{ $user->username }}')"
+                                            class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     @endif
                                 </td>
                             </tr>
@@ -281,14 +313,13 @@
                             $user->id !== auth()->id() &&
                                 ($user->role_id !== \App\Http\Controllers\Admin\UserController::ROLE_SUPER_ADMIN ||
                                     auth()->user()->role_id === \App\Http\Controllers\Admin\UserController::ROLE_SUPER_ADMIN))
-                            <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}">
-                                @csrf @method('DELETE')
-                                <button class="text-red-600"
-                                    onclick="return confirm('Yakin ingin menghapus user {{ $user->username }}?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                            <button type="button"
+                                onclick="openDeleteUserModal({{ $user->id }}, '{{ $user->username }}')"
+                                class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         @endif
+
                     </div>
                 </div>
             @empty
@@ -298,110 +329,136 @@
     </div>
 
 
-        {{-- Modal Create --}}
-        <div id="createUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-            @include('admin.pages.users.create')
-        </div>
+    {{-- Modal Create --}}
+    <div id="createUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        @include('admin.pages.users.create')
+    </div>
 
-        {{-- Modal Edit --}}
-        <div id="editUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-            @include('admin.pages.users.edit')
-        </div>
-    @endsection
+    {{-- Modal Edit --}}
+    <div id="editUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        @include('admin.pages.users.edit')
+    </div>
 
-    @push('scripts')
-        <script>
-            // Modal
-            function openUserModal() {
-                document.getElementById('createUserModal').classList.remove('hidden');
-                document.getElementById('createUserModal').classList.add('flex');
+    {{-- Modal Edit --}}
+    <div id="deleteUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        @include('admin.pages.users.delete')
+    </div>
+
+@endsection
+
+@push('scripts')
+    <script>
+        // Modal Create
+        function openUserModal() {
+            document.getElementById('createUserModal').classList.remove('hidden');
+            document.getElementById('createUserModal').classList.add('flex');
+        }
+
+        function closeUserModal() {
+            document.getElementById('createUserModal').classList.add('hidden');
+            document.getElementById('createUserModal').classList.remove('flex');
+        }
+
+        // Modal Edit 
+        function openEditModal(user) {
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editNama').value = user.nama_lengkap;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editRole').value = user.role_id;
+
+            document.getElementById('editUserForm').action = '/admin/users/' + user.id;
+
+            if (user.role_id == 3) {
+                document.getElementById('guru-fields-edit').classList.remove('hidden');
+                document.getElementById('editNip').value = user.guru?.nip || '';
+                document.getElementById('editMapel').value = user.guru?.mata_pelajaran || '';
+            } else {
+                document.getElementById('guru-fields-edit').classList.add('hidden');
             }
 
-            function closeUserModal() {
-                document.getElementById('createUserModal').classList.add('hidden');
-                document.getElementById('createUserModal').classList.remove('flex');
+            if (user.role_id == 4) {
+                document.getElementById('siswa-fields-edit').classList.remove('hidden');
+                document.getElementById('editNis').value = user.siswa?.nis || '';
+                document.getElementById('editKelas').value = user.siswa?.kelas_id || '';
+                document.getElementById('editJurusan').value = user.siswa?.jurusan_id || '';
+            } else {
+                document.getElementById('siswa-fields-edit').classList.add('hidden');
             }
 
-            // Statistik klik → filter otomatis
-            document.querySelectorAll('.stat-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    let role = card.dataset.role;
-                    document.getElementById('role').value = role;
-                    document.getElementById('filterForm').submit();
-                });
+            document.getElementById('editUserModal').classList.remove('hidden');
+            document.getElementById('editUserModal').classList.add('flex');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editUserModal').classList.add('hidden');
+            document.getElementById('editUserModal').classList.remove('flex');
+        }
+
+        // Buka Modal Delete User
+        function openDeleteUserModal(id, username) {
+            document.getElementById('deleteUsername').innerText = username;
+            document.getElementById('deleteUserForm').action = '/admin/users/' + id;
+
+            document.getElementById('deleteUserModal').classList.remove('hidden');
+            document.getElementById('deleteUserModal').classList.add('flex');
+        }
+
+        function closeDeleteUserModal() {
+            document.getElementById('deleteUserModal').classList.add('hidden');
+            document.getElementById('deleteUserModal').classList.remove('flex');
+        }
+
+
+        // Statistik klik → filter otomatis
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                let role = card.dataset.role;
+                document.getElementById('role').value = role;
+                document.getElementById('filterForm').submit();
             });
+        });
 
-            // Tampilkan filter jurusan/kelas jika role siswa
-            function toggleSiswaFilters() {
-                const role = document.getElementById('role').value;
-                const siswaFilters = document.getElementById('siswaFilters');
-                if (role === 'siswa') {
-                    siswaFilters.classList.remove('hidden');
-                } else {
-                    siswaFilters.classList.add('hidden');
-                }
+        // Tampilkan filter jurusan/kelas jika role siswa
+        function toggleSiswaFilters() {
+            const role = document.getElementById('role').value;
+            const siswaFilters = document.getElementById('siswaFilters');
+            if (role === 'siswa') {
+                siswaFilters.classList.remove('hidden');
+            } else {
+                siswaFilters.classList.add('hidden');
             }
-            document.getElementById('role').addEventListener('change', function() {
-                toggleSiswaFilters();
-                document.getElementById('filterForm').submit(); // auto submit role
-            });
+        }
+        document.getElementById('role').addEventListener('change', function() {
             toggleSiswaFilters();
+            document.getElementById('filterForm').submit(); // auto submit role
+        });
+        toggleSiswaFilters();
 
-            // Auto submit saat jurusan/kelas berubah
-            const jurusanSelect = document.getElementById('jurusan');
-            const kelasSelect = document.getElementById('kelas');
+        // Auto submit saat jurusan/kelas berubah
+        const jurusanSelect = document.getElementById('jurusan');
+        const kelasSelect = document.getElementById('kelas');
 
-            if (jurusanSelect) {
-                jurusanSelect.addEventListener('change', function() {
-                    document.getElementById('filterForm').submit();
-                });
-            }
-
-            if (kelasSelect) {
-                kelasSelect.addEventListener('change', function() {
-                    document.getElementById('filterForm').submit();
-                });
-            }
-
-            toggleSiswaFilters();
-
-            // Auto search dengan debounce
-            let searchTimer;
-            document.getElementById('search').addEventListener('input', function() {
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => {
-                    document.getElementById('filterForm').submit();
-                }, 500);
+        if (jurusanSelect) {
+            jurusanSelect.addEventListener('change', function() {
+                document.getElementById('filterForm').submit();
             });
+        }
 
-            // Modal Edit 
-            function openEditModal(user) {
-                document.getElementById('editUserId').value = user.id;
-                document.getElementById('editNama').value = user.nama_lengkap;
-                document.getElementById('editUsername').value = user.username;
-                document.getElementById('editRole').value = user.role_id;
+        if (kelasSelect) {
+            kelasSelect.addEventListener('change', function() {
+                document.getElementById('filterForm').submit();
+            });
+        }
 
-                document.getElementById('editUserForm').action = '/admin/users/' + user.id;
+        toggleSiswaFilters();
 
-                if (user.role_id == 3) {
-                    document.getElementById('guru-fields-edit').classList.remove('hidden');
-                    document.getElementById('editNip').value = user.guru?.nip || '';
-                    document.getElementById('editMapel').value = user.guru?.mata_pelajaran || '';
-                } else {
-                    document.getElementById('guru-fields-edit').classList.add('hidden');
-                }
-
-                if (user.role_id == 4) {
-                    document.getElementById('siswa-fields-edit').classList.remove('hidden');
-                    document.getElementById('editNis').value = user.siswa?.nis || '';
-                    document.getElementById('editKelas').value = user.siswa?.kelas_id || '';
-                    document.getElementById('editJurusan').value = user.siswa?.jurusan_id || '';
-                } else {
-                    document.getElementById('siswa-fields-edit').classList.add('hidden');
-                }
-
-                document.getElementById('editUserModal').classList.remove('hidden');
-                document.getElementById('editUserModal').classList.add('flex');
-            }
-        </script>
-    @endpush
+        // Auto search dengan debounce
+        let searchTimer;
+        document.getElementById('search').addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                document.getElementById('filterForm').submit();
+            }, 500);
+        });
+    </script>
+@endpush

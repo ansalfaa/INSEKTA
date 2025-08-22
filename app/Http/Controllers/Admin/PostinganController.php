@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Postingan;
+
 use Illuminate\Http\Request;
 
 class PostinganController extends Controller
@@ -33,5 +35,4 @@ class PostinganController extends Controller
     return redirect()->route('admin.konten.index')->with('success', 'Postingan berhasil dihapus.');
   }
 
-  // Kalau kamu butuh buat create dan update postingan lewat admin, bisa ditambahkan method create, store, edit, update juga
 }

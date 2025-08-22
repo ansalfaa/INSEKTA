@@ -15,4 +15,11 @@ class Kelas extends Model
     {
         return $this->hasMany(Siswa::class);
     }
+
+    // Tambahkan relasi ke postingan
+    public function postingans(): HasMany
+    {
+        return $this->hasMany(Postingan::class);
+    }
 }
+

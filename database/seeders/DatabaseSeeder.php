@@ -13,43 +13,83 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Buat Role terlebih dahulu
-        $adminRole = Role::create(['nama_role' => 'admin']);
-        $guruRole = Role::create(['nama_role' => 'guru']);
-        $siswaRole = Role::create(['nama_role' => 'siswa']);
+        // Buat Role
+        $superAdminRole = Role::firstOrCreate(['nama_role' => 'super_admin']);
+        $adminRole      = Role::firstOrCreate(['nama_role' => 'admin']);
+        $guruRole       = Role::firstOrCreate(['nama_role' => 'guru']);
+        $siswaRole      = Role::firstOrCreate(['nama_role' => 'siswa']);
 
-        // 2. Buat Data Kelas
+        // Buat Data Kelas
         $kelasList = ['X', 'XI', 'XII', 'XIII'];
         foreach ($kelasList as $nama) {
-            Kelas::create(['nama_kelas' => $nama]);
+            Kelas::firstOrCreate(['nama_kelas' => $nama]);
         }
 
-        // 3. Buat Data Jurusan
+        // Buat Data Jurusan
         $jurusanList = ['SIJA', 'TAV', 'TKR', 'TP', 'DPIB'];
         foreach ($jurusanList as $nama) {
-            Jurusan::create(['nama_jurusan' => $nama]);
+            Jurusan::firstOrCreate(['nama_jurusan' => $nama]);
         }
 
-        // 4. Buat Users dengan role_id sesuai Role yang dibuat
-        User::create([
-            'nama_lengkap' => 'Administrator',
-            'username' => 'admin',
-            'password' => Hash::make('admin123'),
-            'role_id' => $adminRole->id,
+        //  Buat Users
+
+        // Super Admin
+        User::firstOrCreate(
+            ['username' => 'Administrator'],
+            [
+                'nama_lengkap' => 'Administrator',
+                'password'     => Hash::make('super123'),
+                'role_id'      => $superAdminRole->id,
+            ]
+        );
+
+        // Admin
+        User::firstOrCreate(
+            ['username' => 'admin'],
+            [
+                'nama_lengkap' => 'Admin1',
+                'password'     => Hash::make('admin123'),
+                'role_id'      => $adminRole->id,
+            ]
+        );
+
+        // Guru
+        $guruUser = User::firstOrCreate(
+            ['username' => 'guru1'],
+            [
+                'nama_lengkap' => 'Guru Contoh',
+                'password'     => Hash::make('guru123'),
+                'role_id'      => $guruRole->id,
+            ]
+        );
+
+        // Tambahkan data guru ke tabel gurus
+        $guruUser->guru()->firstOrCreate([
+            'nip'            => '1987654321',
+            'nama_lengkap'   => 'Guru Contoh',
+            'mata_pelajaran' => 'Matematika',
         ]);
 
-        User::create([
-            'nama_lengkap' => 'Guru Contoh',
-            'username' => 'guru1',
-            'password' => Hash::make('guru123'),
-            'role_id' => $guruRole->id,
-        ]);
+        // Siswa
+        $siswaUser = User::firstOrCreate(
+            ['username' => 'siswa1'],
+            [
+                'nama_lengkap' => 'Siswa Contoh',
+                'password'     => Hash::make('siswa123'),
+                'role_id'      => $siswaRole->id,
+            ]
+        );
 
-        User::create([
+        // Ambil kelas & jurusan contoh
+        $kelasX   = Kelas::where('nama_kelas', 'X')->first();
+        $jurusanS = Jurusan::where('nama_jurusan', 'SIJA')->first();
+
+        // Tambahkan data siswa ke tabel siswas
+        $siswaUser->siswa()->firstOrCreate([
+            'nis'          => '1234567890',
             'nama_lengkap' => 'Siswa Contoh',
-            'username' => 'siswa1',
-            'password' => Hash::make('siswa123'),
-            'role_id' => $siswaRole->id,
+            'kelas_id'     => $kelasX?->id,
+            'jurusan_id'   => $jurusanS?->id,
         ]);
     }
 }

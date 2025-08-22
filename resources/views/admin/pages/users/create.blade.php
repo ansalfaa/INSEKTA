@@ -48,7 +48,8 @@
                             class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm"
                             required> </div>
                 </div>
-                \<!-- Role -->
+
+                <!-- Role -->
                 <div> <label class="flex items-center text-sm font-semibold text-gray-700 mb-2"> <i
                             class="fas fa-users-cog text-primary-amber mr-2"></i> Role </label> <select id="role_id"
                         name="role_id"
@@ -59,6 +60,7 @@
                             <option value="{{ $role->id }}">{{ $role->nama_role }}</option>
                         @endforeach
                     </select> </div>
+
                 <!-- Guru Fields -->
                 <div id="guru-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div> <label class="flex items-center text-sm font-semibold text-gray-700 mb-2"> <i
@@ -73,6 +75,7 @@
                             class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
                     </div>
                 </div>
+
                 <!-- Siswa Fields -->
                 <div id="siswa-fields" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div> <label class="flex items-center text-sm font-semibold text-gray-700 mb-2"> <i
@@ -99,6 +102,7 @@
                             @endforeach
                         </select> </div>
                 </div>
+
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-200"> <button
                         type="button" onclick="closeUserModal()"
@@ -110,6 +114,7 @@
         </div>
     </div>
 </div>
+
 <script>
     document.getElementById('role_id').addEventListener('change', function() {
         let guruFields = document.getElementById('guru-fields');

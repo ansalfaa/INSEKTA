@@ -35,6 +35,7 @@
 
 <body class="bg-amber-50/30 font-sans antialiased text-[13px]">
     <div class="min-h-screen flex">
+        
         {{-- Sidebar --}}
         <aside id="sidebar"
             class="fixed inset-y-0 left-0 z-50 w-48 bg-white border-r border-amber-100 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
