@@ -1,6 +1,6 @@
 <div class="p-4 sm:p-6 lg:p-8 w-full max-w-3xl mx-auto">
     <div class="bg-white rounded-xl shadow-lg flex flex-col max-h-[90vh] overflow-hidden">
-        
+
         <!-- Header -->
         <div class="bg-gradient-to-r from-primary-amber to-orange-500 p-4 rounded-t-xl">
             <h2 class="text-lg font-semibold text-white flex items-center">
@@ -11,8 +11,9 @@
 
         <!-- Scrollable Form -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            @if(isset($user))
-                <form id="editUserForm" action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-4">
+            @if (isset($user))
+                <form id="editUserForm" action="{{ route('admin.users.update', $user->id) }}" method="POST"
+                    class="space-y-4">
                     @csrf
                     @method('PUT')
 
