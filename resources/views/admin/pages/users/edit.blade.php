@@ -1,193 +1,183 @@
-    @extends('layouts.admin.app')
+<div class="p-4 sm:p-6 lg:p-8 w-full max-w-3xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg flex flex-col max-h-[90vh] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-primary-amber to-orange-500 p-4 rounded-t-xl">
+            <h2 class="text-lg font-semibold text-white flex items-center">
+                <i class="fas fa-user-edit mr-2"></i>
+                Form Edit User
+            </h2>
+        </div>
 
-    @section('title', 'Edit User')
-    @section('page-title', 'Edit User')
-
-    @section('content')
-        <div class="max-w-2xl mx-auto">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                {{-- Judul Halaman --}}
-                <div class="mb-6">
-                    <h1 class="text-2xl font-bold text-gray-900">Edit User</h1>
-                    <p class="text-gray-600 mt-1">Perbarui informasi user {{ $user->username }}</p>
-                </div>
-
-                {{-- Form Update User --}}
-                <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-6">
+        <!-- Scrollable Form -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+            @if(isset($user))
+                <form id="editUserForm" action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
 
-                    {{-- Nama Lengkap --}}
-                    <div>
-                        <label for="nama_lengkap" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
-                        <input type="text" name="nama_lengkap" id="nama_lengkap"
-                            value="{{ old('nama_lengkap', $user->nama_lengkap) }}" required
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('nama_lengkap') border-red-500 @enderror"
-                            placeholder="Masukkan nama lengkap">
-                        @error('nama_lengkap')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                    <input type="hidden" id="editUserId" name="id" value="{{ $user->id }}">
+
+                    <!-- Nama Lengkap & Username -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-id-card text-primary-amber mr-2"></i>
+                                Nama Lengkap
+                            </label>
+                            <input type="text" id="editNama" name="nama_lengkap"
+                                value="{{ old('nama_lengkap', $user->nama_lengkap) }}"
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                                       focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                                       transition-all duration-300 outline-none text-sm"
+                                required>
+                        </div>
+                        <div>
+                            <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-user text-primary-amber mr-2"></i>
+                                Username
+                            </label>
+                            <input type="text" id="editUsername" name="username"
+                                value="{{ old('username', $user->username) }}"
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                                       focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                                       transition-all duration-300 outline-none text-sm"
+                                required>
+                        </div>
                     </div>
 
-                    {{-- Username --}}
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username *</label>
-                        <input type="text" name="username" id="username" value="{{ old('username', $user->username) }}"
-                            required
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('username') border-red-500 @enderror"
-                            placeholder="Masukkan username">
-                        @error('username')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                    <!-- Password (opsional) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-lock text-primary-amber mr-2"></i>
+                                Password (Kosongkan jika tidak diubah)
+                            </label>
+                            <input type="password" name="password"
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                                       focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                                       transition-all duration-300 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-lock text-primary-amber mr-2"></i>
+                                Konfirmasi Password
+                            </label>
+                            <input type="password" name="password_confirmation"
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                                       focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                                       transition-all duration-300 outline-none text-sm">
+                        </div>
                     </div>
 
-                    {{-- Pilihan Role --}}
+                    <!-- Role -->
                     <div>
-                        <label for="role_id" class="block text-sm font-medium text-gray-700 mb-1">Role *</label>
-                        <select name="role_id" id="role" required
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('role_id') border-red-500 @enderror">
-                            <option value="">Pilih Role</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->id }}"
-                                    {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
-                                    {{ ucfirst($role->nama_role) }}
+                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-users-cog text-primary-amber mr-2"></i>
+                            Role
+                        </label>
+                        <select id="editRole" name="role_id"
+                            class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                                   focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                                   transition-all duration-300 outline-none text-sm"
+                            required>
+                            <option value="">-- Pilih Role --</option>
+                            @foreach ($roles->where('nama_role', '!=', 'super_admin') as $role)
+                                <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
+                                    {{ $role->nama_role }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('role_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
                     </div>
 
-                    {{-- Password Baru --}}
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                        <input type="password" name="password" id="password"
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('password') border-red-500 @enderror"
-                            placeholder="Kosongkan jika tidak ingin mengubah password">
-                        <p class="mt-1 text-sm text-gray-500">Kosongkan jika tidak ingin mengubah password</p>
-                        @error('password')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Konfirmasi Password --}}
-                    <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi
-                            Password Baru</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation"
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="Konfirmasi password baru">
-                    </div>
-
-                    {{-- Field Guru (muncul jika role Guru) --}}
-                    <div id="guru-fields" class="hidden">
+                    <!-- Guru Fields -->
+                    <div id="guru-fields-edit"
+                        class="{{ $user->role_id == 3 ? '' : 'hidden' }} grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="nip" class="block text-sm font-medium text-gray-700 mb-1">NIP *</label>
-                            <input type="text" name="nip" id="nip"
+                            <label>NIP</label>
+                            <input type="text" id="editNip" name="nip"
                                 value="{{ old('nip', $user->guru->nip ?? '') }}"
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('nip') border-red-500 @enderror"
-                                placeholder="Masukkan NIP">
-                            @error('nip')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200">
                         </div>
                         <div>
-                            <label for="mata_pelajaran" class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran
-                                *</label>
-                            <input type="text" name="mata_pelajaran" id="mata_pelajaran"
+                            <label>Mata Pelajaran</label>
+                            <input type="text" id="editMapel" name="mata_pelajaran"
                                 value="{{ old('mata_pelajaran', $user->guru->mata_pelajaran ?? '') }}"
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('mata_pelajaran') border-red-500 @enderror"
-                                placeholder="Masukkan Mata Pelajaran">
-                            @error('mata_pelajaran')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200">
                         </div>
                     </div>
 
-                    {{-- Field Siswa (muncul jika role Siswa) --}}
-                    <div id="siswa-fields" class="hidden">
+                    <!-- Siswa Fields -->
+                    <div id="siswa-fields-edit"
+                        class="{{ $user->role_id == 4 ? '' : 'hidden' }} grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label for="nis" class="block text-sm font-medium text-gray-700 mb-1">NIS *</label>
-                            <input type="text" name="nis" id="nis"
+                            <label>NIS</label>
+                            <input type="text" id="editNis" name="nis"
                                 value="{{ old('nis', $user->siswa->nis ?? '') }}"
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('nis') border-red-500 @enderror"
-                                placeholder="Masukkan NIS">
-                            @error('nis')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200">
                         </div>
                         <div>
-                            <label for="kelas_id" class="block text-sm font-medium text-gray-700 mb-1">Kelas *</label>
-                            <select name="kelas_id" id="kelas_id" required
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('kelas_id') border-red-500 @enderror">
-                                <option value="">Pilih Kelas</option>
+                            <label>Kelas</label>
+                            <select id="editKelas" name="kelas_id"
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200">
+                                <option value="">-- Pilih Kelas --</option>
                                 @foreach ($kelases as $kelas)
                                     <option value="{{ $kelas->id }}"
-                                        {{ old('kelas_id', $user->siswa->kelas_id ?? '') == $kelas->id ? 'selected' : '' }}>
+                                        {{ isset($user->siswa) && $user->siswa->kelas_id == $kelas->id ? 'selected' : '' }}>
                                         {{ $kelas->nama_kelas }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('kelas_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
                         <div>
-                            <label for="jurusan_id" class="block text-sm font-medium text-gray-700 mb-1">Jurusan *</label>
-                            <select name="jurusan_id" id="jurusan_id" required
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('jurusan_id') border-red-500 @enderror">
-                                <option value="">Pilih Jurusan</option>
+                            <label>Jurusan</label>
+                            <select id="editJurusan" name="jurusan_id"
+                                class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200">
+                                <option value="">-- Pilih Jurusan --</option>
                                 @foreach ($jurusans as $jurusan)
                                     <option value="{{ $jurusan->id }}"
-                                        {{ old('jurusan_id', $user->siswa->jurusan_id ?? '') == $jurusan->id ? 'selected' : '' }}>
+                                        {{ isset($user->siswa) && $user->siswa->jurusan_id == $jurusan->id ? 'selected' : '' }}>
                                         {{ $jurusan->nama_jurusan }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('jurusan_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
                     </div>
 
-                    {{-- Tombol Submit --}}
-                    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-                        <a href="{{ route('admin.users.index') }}"
-                            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 rounded-lg">
                             Batal
-                        </a>
+                        </button>
                         <button type="submit"
-                            class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                            <i class="fas fa-save mr-2"></i> Update User
+                            class="px-6 py-2 rounded-lg bg-gradient-to-r from-primary-amber to-orange-500 text-white">
+                            Update User
                         </button>
                     </div>
                 </form>
-            </div>
+            @else
+                <div class="p-4 bg-red-100 text-red-700 rounded-lg text-center">
+                    User tidak ditemukan.
+                </div>
+            @endif
         </div>
+    </div>
+</div>
 
-        {{-- Script toggle field berdasarkan role --}}
-        <script>
-            function toggleRoleFields() {
-                let roleSelect = document.getElementById('role');
-                let guruFields = document.getElementById('guru-fields');
-                let siswaFields = document.getElementById('siswa-fields');
+<script>
+    function toggleRoleFieldsEdit() {
+        let roleSelect = document.getElementById('editRole');
+        let guruFields = document.getElementById('guru-fields-edit');
+        let siswaFields = document.getElementById('siswa-fields-edit');
 
-                guruFields.classList.add('hidden');
-                siswaFields.classList.add('hidden');
+        guruFields.classList.add('hidden');
+        siswaFields.classList.add('hidden');
 
-                let selectedRole = roleSelect.options[roleSelect.selectedIndex].text.toLowerCase();
+        let selectedRole = parseInt(roleSelect.value);
+        if (selectedRole === 3) guruFields.classList.remove('hidden'); // Guru
+        else if (selectedRole === 4) siswaFields.classList.remove('hidden'); // Siswa
+    }
 
-                if (selectedRole === 'guru') {
-                    guruFields.classList.remove('hidden');
-                } else if (selectedRole === 'siswa') {
-                    siswaFields.classList.remove('hidden');
-                }
-            }
-
-            document.getElementById('role').addEventListener('change', toggleRoleFields);
-
-            // Jalankan saat halaman pertama kali dibuka
-            window.onload = toggleRoleFields;
-        </script>
-    @endsection
+    document.getElementById('editRole')?.addEventListener('change', toggleRoleFieldsEdit);
+    window.addEventListener('load', toggleRoleFieldsEdit);
+</script>
