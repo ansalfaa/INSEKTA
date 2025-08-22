@@ -5,9 +5,42 @@
 @section('title', 'Manajemen User')
 
 @section('content')
+
+{{-- Toast Notifikasi --}}
+    @if (session('success'))
+        <div id="toastSuccess"
+            class="fixed top-5 right-5 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-slide-in">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+
+        <script>
+            // otomatis hilang setelah 3 detik
+            setTimeout(() => {
+                document.getElementById('toastSuccess').classList.add('hidden');
+            }, 3000);
+        </script>
+
+        <style>
+            @keyframes slide-in {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .animate-slide-in {
+                animation: slide-in 0.4s ease-out;
+            }
+        </style>
+    @endif
+
     <div class="space-y-6 font-poppins">
-
-
 
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-4">
