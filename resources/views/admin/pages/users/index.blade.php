@@ -61,7 +61,7 @@
 
         {{-- Statistik --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
+
             {{-- Total User --}}
             <div class="stat-card flex items-center p-4 bg-white rounded-xl shadow hover:shadow-md transition"
                 data-role="">
@@ -115,11 +115,18 @@
         <div class="bg-white rounded-xl shadow p-5 border border-gray-100">
             <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4"
                 id="filterForm">
+
+                {{-- Search Box --}}
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari User</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                        placeholder="Cari berdasarkan username atau nama...">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="search" id="searchInput" value="{{ request('search') }}"
+                            placeholder="Cari berdasarkan username atau nama..."
+                            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                    </div>
                 </div>
 
                 {{-- Role --}}
@@ -164,16 +171,7 @@
                         </select>
                     </div>
                 </div>
-
-                {{-- Button --}}
-                <div class="flex items-end">
-                    <button type="submit"
-                        class="w-full px-4 py-2 bg-amber-500 text-white rounded-lg shadow hover:bg-amber-600 transition-colors duration-200">
-                        <i class="fas fa-search mr-2"></i>Cari
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
 
         {{-- Tabel Data (desktop & tablet) --}}
         <div class="hidden sm:block bg-white rounded-xl shadow border border-gray-100">
@@ -458,7 +456,7 @@
 
         // Auto search dengan debounce
         let searchTimer;
-        document.getElementById('search').addEventListener('input', function() {
+        document.getElementById('searchInput').addEventListener('input', function() {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(() => {
                 document.getElementById('filterForm').submit();
