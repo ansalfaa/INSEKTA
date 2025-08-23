@@ -45,16 +45,17 @@
             </div>
 
             <div class="flex flex-col sm:flex-row items-center gap-3">
+
                 <!-- Form Search -->
-                <form method="GET" action="{{ route('admin.pengumuman.index') }}" class="flex items-center">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari pengumuman..."
-                        class="px-3 py-2 border rounded-lg w-48 sm:w-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" />
-                    <button type="submit"
-                        class="ml-2 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg shadow hover:from-amber-600 hover:to-orange-600">
+                <form method="GET" action="{{ route('admin.pengumuman.index') }}" class="relative w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                         <i class="fas fa-search"></i>
-                    </button>
+                    </span>
+                    <input id="searchInput" type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari pengumuman..."
+                        class="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" />
                 </form>
+
 
                 <!-- Tombol Tambah -->
                 <button onclick="openCreatePengumuman()"
@@ -150,6 +151,7 @@
         function openCreatePengumuman() {
             toggleModal('createPengumumanModal', true);
         }
+
         function closeCreatePengumuman() {
             toggleModal('createPengumumanModal', false);
         }
@@ -162,6 +164,7 @@
             document.getElementById('editPengumumanForm').action = '/admin/pengumuman/' + p.id;
             toggleModal('editPengumumanModal', true);
         }
+
         function closeEditPengumuman() {
             toggleModal('editPengumumanModal', false);
         }
@@ -173,6 +176,7 @@
             document.getElementById('showIsi').innerText = p.isi;
             toggleModal('showPengumumanModal', true);
         }
+
         function closeShowPengumuman() {
             toggleModal('showPengumumanModal', false);
         }
@@ -183,6 +187,7 @@
             document.getElementById('deletePengumumanForm').action = '/admin/pengumuman/' + id;
             toggleModal('deletePengumumanModal', true);
         }
+
         function closeDeletePengumuman() {
             toggleModal('deletePengumumanModal', false);
         }
@@ -198,5 +203,18 @@
                 modal.classList.remove('flex');
             }
         }
+
+        // 🔍 Auto submit search ketika ngetik 
+        let timer;
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.addEventListener("input", function() {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    this.form.submit();
+                }, 500); // 0.5 detik setelah berhenti ngetik baru jalan
+            });
+        }
+
     </script>
 @endpush
