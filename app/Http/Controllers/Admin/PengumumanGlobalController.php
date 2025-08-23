@@ -36,13 +36,27 @@ class PengumumanGlobalController extends Controller
       ->with('success', 'Pengumuman Global berhasil dihapus!');
   }
 
-  // daftar pengumuman global dengan pagination
-  public function index()
+  // daftar pengumuman global dengan pagination + search
+  public function index(Request $request)
   {
-    $pengumumanGlobals = PengumumanGlobal::latest()->paginate(10);
+    $query = PengumumanGlobal::query();
+
+    // filter kalau ada pencarian
+    if ($request->has('search') && $request->search) {
+      $query->where(function ($q) use ($request) {
+        $q->where('judul', 'like', '%' . $request->search . '%')
+          ->orWhere('isi', 'like', '%' . $request->search . '%');
+      });
+    }
+
+    $pengumumanGlobals = $query->latest()->paginate(10);
+
+    // biar pagination nggak reset pencarian
+    $pengumumanGlobals->appends(['search' => $request->search]);
 
     return view('admin.pages.pengumuman.index', compact('pengumumanGlobals'));
   }
+
 
   public function create()
   {
@@ -68,4 +82,6 @@ class PengumumanGlobalController extends Controller
     return redirect()->route('admin.pengumuman.index')
       ->with('success', 'Pengumuman Global berhasil diperbarui!');
   }
+
+  
 }

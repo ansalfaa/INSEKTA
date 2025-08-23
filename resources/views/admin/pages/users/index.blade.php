@@ -61,6 +61,7 @@
 
         {{-- Statistik --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
             {{-- Total User --}}
             <div class="stat-card flex items-center p-4 bg-white rounded-xl shadow hover:shadow-md transition"
                 data-role="">
@@ -72,6 +73,7 @@
                     <p class="text-lg font-semibold text-gray-900">{{ $totalUsers }}</p>
                 </div>
             </div>
+
             {{-- Admin --}}
             <div class="stat-card flex items-center p-4 bg-white rounded-xl shadow hover:shadow-md transition"
                 data-role="admin">
@@ -83,6 +85,7 @@
                     <p class="text-lg font-semibold">{{ $rolesCount['admin'] ?? 0 }}</p>
                 </div>
             </div>
+
             {{-- Guru --}}
             <div class="stat-card flex items-center p-4 bg-white rounded-xl shadow hover:shadow-md transition"
                 data-role="guru">
@@ -94,6 +97,7 @@
                     <p class="text-lg font-semibold">{{ $rolesCount['guru'] ?? 0 }}</p>
                 </div>
             </div>
+
             {{-- Siswa --}}
             <div class="stat-card flex items-center p-4 bg-white rounded-xl shadow hover:shadow-md transition"
                 data-role="siswa">

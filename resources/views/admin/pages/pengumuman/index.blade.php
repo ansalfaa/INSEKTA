@@ -3,8 +3,6 @@
 ])
 
 @section('content')
-
-
     {{-- Toast Notifikasi --}}
     @if (session('success'))
         <div id="toastSuccess"
@@ -14,7 +12,6 @@
         </div>
 
         <script>
-            // otomatis hilang setelah 3 detik
             setTimeout(() => {
                 document.getElementById('toastSuccess').classList.add('hidden');
             }, 3000);
@@ -39,15 +36,26 @@
         </style>
     @endif
 
-
     <div class="p-4 sm:p-6 lg:p-8">
         <!-- Header Halaman -->
-        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">📢 Daftar Pengumuman</h1>
                 <p class="text-gray-600">Berikut adalah semua pengumuman yang sudah ditambahkan.</p>
             </div>
-            <div class="mt-4 sm:mt-0">
+
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <!-- Form Search -->
+                <form method="GET" action="{{ route('admin.pengumuman.index') }}" class="flex items-center">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari pengumuman..."
+                        class="px-3 py-2 border rounded-lg w-48 sm:w-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" />
+                    <button type="submit"
+                        class="ml-2 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg shadow hover:from-amber-600 hover:to-orange-600">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+
                 <!-- Tombol Tambah -->
                 <button onclick="openCreatePengumuman()"
                     class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg shadow hover:from-amber-600 hover:to-orange-600">
@@ -68,7 +76,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($pengumumanGlobals as $p)
+                    @forelse ($pengumumanGlobals as $p)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-4 py-3 text-sm font-medium text-gray-800">{{ $p->judul }}</td>
                             <td class="px-4 py-3 text-sm">
@@ -101,45 +109,49 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                                Belum ada pengumuman.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="mt-4">
+            {{ $pengumumanGlobals->links() }}
+        </div>
     </div>
 
-    {{-- Modal Create --}}
+    {{-- Modal --}}
     <div id="createPengumumanModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
         @include('admin.pages.pengumuman.create')
     </div>
 
-    {{-- Modal Edit --}}
     <div id="editPengumumanModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
         @include('admin.pages.pengumuman.edit')
     </div>
 
-    {{-- Modal Show --}}
     <div id="showPengumumanModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
         @include('admin.pages.pengumuman.show')
     </div>
 
-    {{-- Modal Delete --}}
     <div id="deletePengumumanModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
         @include('admin.pages.pengumuman.delete')
     </div>
 @endsection
 
-
 @push('scripts')
     <script>
         // Buka Modal Create
         function openCreatePengumuman() {
-            document.getElementById('createPengumumanModal').classList.remove('hidden');
-            document.getElementById('createPengumumanModal').classList.add('flex');
+            toggleModal('createPengumumanModal', true);
         }
-
         function closeCreatePengumuman() {
-            document.getElementById('createPengumumanModal').classList.add('hidden');
-            document.getElementById('createPengumumanModal').classList.remove('flex');
+            toggleModal('createPengumumanModal', false);
         }
 
         // Buka Modal Edit
@@ -147,19 +159,11 @@
             document.getElementById('editPengumumanId').value = p.id;
             document.getElementById('editJudul').value = p.judul;
             document.getElementById('editIsi').value = p.isi;
-
-            // set action form edit
             document.getElementById('editPengumumanForm').action = '/admin/pengumuman/' + p.id;
-
-            // munculin modal
-            document.getElementById('editPengumumanModal').classList.remove('hidden');
-            document.getElementById('editPengumumanModal').classList.add('flex');
+            toggleModal('editPengumumanModal', true);
         }
-
-        //Tutup Modal Edit
         function closeEditPengumuman() {
-            document.getElementById('editPengumumanModal').classList.add('hidden');
-            document.getElementById('editPengumumanModal').classList.remove('flex');
+            toggleModal('editPengumumanModal', false);
         }
 
         // Buka Modal Show
@@ -167,30 +171,32 @@
             document.getElementById('showPengumumanId').value = p.id;
             document.getElementById('showJudul').innerText = p.judul;
             document.getElementById('showIsi').innerText = p.isi;
-
-            document.getElementById('showPengumumanModal').classList.remove('hidden');
-            document.getElementById('showPengumumanModal').classList.add('flex');
+            toggleModal('showPengumumanModal', true);
         }
-
-        // Tutup Modal Show
         function closeShowPengumuman() {
-            document.getElementById('showPengumumanModal').classList.add('hidden');
-            document.getElementById('showPengumumanModal').classList.remove('flex');
+            toggleModal('showPengumumanModal', false);
         }
 
         // Buka Modal Delete
         function openDeletePengumuman(id, judul) {
             document.getElementById('deleteJudul').innerText = judul;
             document.getElementById('deletePengumumanForm').action = '/admin/pengumuman/' + id;
-
-            document.getElementById('deletePengumumanModal').classList.remove('hidden');
-            document.getElementById('deletePengumumanModal').classList.add('flex');
+            toggleModal('deletePengumumanModal', true);
         }
-        
-        // Buka Modal Delete
         function closeDeletePengumuman() {
-            document.getElementById('deletePengumumanModal').classList.add('hidden');
-            document.getElementById('deletePengumumanModal').classList.remove('flex');
+            toggleModal('deletePengumumanModal', false);
+        }
+
+        // Helper toggle modal
+        function toggleModal(id, show = true) {
+            const modal = document.getElementById(id);
+            if (show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
     </script>
 @endpush
