@@ -20,6 +20,9 @@ class User extends Authenticatable
         'role_id',
     ];
 
+    protected $guarded = ['id'];
+
+
     // Kolom yang akan disembunyikan saat serialisasi
     protected $hidden = [
         'password',

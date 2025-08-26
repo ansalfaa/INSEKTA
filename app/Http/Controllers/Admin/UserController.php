@@ -10,7 +10,7 @@ use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Guru;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Hash, Auth, DB};
+use Illuminate\Support\Facades\{Hash, Auth, DB, Log};
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -19,6 +19,7 @@ class UserController extends Controller
   const ROLE_ADMIN = 2;
   const ROLE_GURU  = 3;
   const ROLE_SISWA = 4;
+
 
   // =========================
   // LIST USERS + FILTER + SEARCH
@@ -86,51 +87,129 @@ class UserController extends Controller
   // =========================
   public function store(Request $request)
   {
-    $rules = [
-      'username'     => 'required|unique:users|min:3|max:50',
-      'password'     => 'required|min:6|confirmed',
-      'role_id'      => 'required|exists:roles,id',
-      'nama_lengkap' => 'required|string|max:100',
-    ];
+    Log::info('User creation attempt started', [
+      'request_data' => $request->all(),
+      'user_agent' => $request->userAgent(),
+      'ip' => $request->ip()
+    ]);
 
-    if ($request->role_id == self::ROLE_SISWA) {
-      $rules['nis'] = 'required|unique:siswas,nis|string|max:20';
-      $rules['jurusan_id'] = 'required|exists:jurusans,id';
-      $rules['kelas_id'] = 'required|exists:kelas,id';
-    } elseif ($request->role_id == self::ROLE_GURU) {
-      $rules['nip'] = 'required|unique:gurus,nip|string|max:20';
-      $rules['mata_pelajaran'] = 'required|string|max:100';
-    }
+    try {
+      $rules = [
+        'username'     => 'required|unique:users|min:3|max:50',
+        'password'     => 'required|min:6|confirmed',
+        'role_id'      => 'required|exists:roles,id',
+        'nama_lengkap' => 'required|string|max:100',
+      ];
 
-    $request->validate($rules);
+      $roleId = (int) $request->role_id;
 
-    DB::transaction(function () use ($request) {
-      $user = User::create([
-        'username' => $request->username,
-        'password' => Hash::make($request->password),
-        'role_id' => $request->role_id,
-        'nama_lengkap' => $request->nama_lengkap,
+      Log::info('Role ID detected', ['role_id' => $roleId]);
+
+      if ($roleId == self::ROLE_SISWA) {
+        $rules['nis'] = 'required|unique:siswas,nis|string|max:20';
+        $rules['jurusan_id'] = 'required|exists:jurusans,id';
+        $rules['kelas_id'] = 'required|exists:kelas,id';
+        Log::info('Added siswa validation rules');
+      } elseif ($roleId == self::ROLE_GURU) {
+        $rules['nip'] = 'required|unique:gurus,nip|string|max:20';
+        $rules['mata_pelajaran'] = 'required|string|max:100';
+        Log::info('Added guru validation rules');
+      }
+
+      Log::info('Validation rules prepared', ['rules' => array_keys($rules)]);
+
+      $validated = $request->validate($rules);
+
+      Log::info('Validation passed successfully', [
+        'validated_fields' => array_keys($validated)
       ]);
 
-      if ($request->role_id == self::ROLE_SISWA) {
-        Siswa::create([
-          'user_id' => $user->id,
-          'nis' => $request->nis,
-          'kelas_id' => $request->kelas_id,
-          'jurusan_id' => $request->jurusan_id,
-          'nama_lengkap' => $request->nama_lengkap,
+      DB::beginTransaction();
+
+      Log::info('Database transaction started');
+
+      $user = User::create([
+        'username'     => $validated['username'],
+        'password'     => Hash::make($validated['password']),
+        'role_id'      => $validated['role_id'],
+        'nama_lengkap' => $validated['nama_lengkap'],
+      ]);
+
+      if (!$user) {
+        throw new \Exception('Failed to create user record');
+      }
+
+      Log::info('User created successfully', [
+        'user_id' => $user->id,
+        'username' => $user->username,
+        'role_id' => $user->role_id
+      ]);
+
+      if ($user->role_id == self::ROLE_SISWA) {
+        if (!isset($validated['nis']) || !isset($validated['kelas_id']) || !isset($validated['jurusan_id'])) {
+          throw new \Exception('Missing required siswa data');
+        }
+
+        $siswa = Siswa::create([
+          'user_id'     => $user->id,
+          'nis'         => $validated['nis'],
+          'kelas_id'    => $validated['kelas_id'],
+          'jurusan_id'  => $validated['jurusan_id'],
+          'nama_lengkap' => $validated['nama_lengkap'],
         ]);
-      } elseif ($request->role_id == self::ROLE_GURU) {
-        Guru::create([
-          'user_id' => $user->id,
-          'nip' => $request->nip,
-          'mata_pelajaran' => $request->mata_pelajaran,
-          'nama_lengkap' => $request->nama_lengkap,
+
+        if (!$siswa) {
+          throw new \Exception('Failed to create siswa record');
+        }
+
+        Log::info('Siswa data created successfully', [
+          'siswa_id' => $siswa->id,
+          'nis' => $siswa->nis
+        ]);
+      } elseif ($user->role_id == self::ROLE_GURU) {
+        if (!isset($validated['nip']) || !isset($validated['mata_pelajaran'])) {
+          throw new \Exception('Missing required guru data');
+        }
+
+        $guru = Guru::create([
+          'user_id'        => $user->id,
+          'nip'            => $validated['nip'],
+          'mata_pelajaran' => $validated['mata_pelajaran'],
+          'nama_lengkap'   => $validated['nama_lengkap'],
+        ]);
+
+        if (!$guru) {
+          throw new \Exception('Failed to create guru record');
+        }
+
+        Log::info('Guru data created successfully', [
+          'guru_id' => $guru->id,
+          'nip' => $guru->nip
         ]);
       }
-    });
 
-    return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
+      DB::commit();
+      Log::info('Transaction committed successfully', ['user_id' => $user->id]);
+
+      return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
+    } catch (\Illuminate\Validation\ValidationException $e) {
+      Log::error('Validation failed', [
+        'errors' => $e->errors(),
+        'input' => $request->all()
+      ]);
+      return redirect()->back()->withErrors($e->errors())->withInput();
+    } catch (\Throwable $e) {
+      DB::rollBack();
+      Log::error('User creation failed with exception', [
+        'error' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+        'input' => $request->all()
+      ]);
+
+      return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+    }
   }
 
   // =========================

@@ -9,16 +9,19 @@ use Illuminate\Http\Request;
 class ChallengeController extends Controller
 {
   /**
-   * Menampilkan daftar challenge.
+   * Tampilkan daftar challenge.
    */
   public function index()
   {
-    $challenges = Challenge::withCount('peserta')->latest()->paginate(10);
+    $challenges = Challenge::withCount('peserta')
+      ->latest()
+      ->paginate(10);
+
     return view('admin.pages.challenge.index', compact('challenges'));
   }
 
   /**
-   * Menampilkan form tambah challenge.
+   * Tampilkan form tambah challenge.
    */
   public function create()
   {
@@ -26,11 +29,10 @@ class ChallengeController extends Controller
   }
 
   /**
-   * Menyimpan challenge baru ke database.
+   * Simpan challenge baru.
    */
   public function store(Request $request)
   {
-    // Validasi input
     $validated = $request->validate([
       'judul'     => 'required|string|max:255',
       'deskripsi' => 'required|string',
@@ -38,16 +40,14 @@ class ChallengeController extends Controller
       'poin'      => 'required|integer|min:0',
     ]);
 
-    // Simpan data ke database
     Challenge::create($validated);
 
-    // Redirect ke index dengan pesan sukses
     return redirect()->route('admin.challenge.index')
       ->with('success', 'Challenge berhasil dibuat.');
   }
 
   /**
-   * Menampilkan form edit challenge.
+   * Tampilkan form edit challenge.
    */
   public function edit(Challenge $challenge)
   {
@@ -55,7 +55,7 @@ class ChallengeController extends Controller
   }
 
   /**
-   * Update data challenge.
+   * Update challenge.
    */
   public function update(Request $request, Challenge $challenge)
   {
@@ -73,28 +73,36 @@ class ChallengeController extends Controller
   }
 
   /**
-   * Hapus challenge dari database.
+   * Hapus challenge.
    */
   public function destroy(Challenge $challenge)
   {
-    $challenge->delete();
-
-    return redirect()->route('admin.challenge.index')
-      ->with('success', 'Challenge berhasil dihapus.');
+    try {
+      $challenge->delete();
+      return redirect()->route('admin.challenge.index')
+        ->with('success', 'Challenge berhasil dihapus.');
+    } catch (\Throwable $e) {
+      return redirect()->route('admin.challenge.index')
+        ->with('error', 'Challenge gagal dihapus, mungkin ada data terkait.');
+    }
   }
 
+  /**
+   * Detail challenge (peserta & statistik).
+   */
   public function show(Challenge $challenge)
   {
-    // contoh dummy data dulu (belum ada relasi peserta)
-    $peserta = collect(); // collection kosong
-    $totalPeserta = 0;
-    $sudahSubmit = 0;
-    $belumSubmit = 0;
-    
+    $peserta = $challenge->peserta; // User collection
+    $submissions = $challenge->submissions; // PartisipasiChallenge collection
+
+    $totalPeserta = $peserta->count();
+    $sudahSubmit  = $submissions->count();
+    $belumSubmit  = $totalPeserta - $sudahSubmit;
 
     return view('admin.pages.challenge.show', compact(
       'challenge',
       'peserta',
+      'submissions',
       'totalPeserta',
       'sudahSubmit',
       'belumSubmit'

@@ -1,63 +1,61 @@
-@extends('layouts.admin.app',['hideHeader' => true, 'hideSidebarRight' => true])
+<div class="p-4 sm:p-6 lg:p-8 w-full max-w-3xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg flex flex-col max-h-[90vh] overflow-hidden">
 
-@section('title', 'Edit Challenge')
-
-@section('content')
-<div class="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-    <!-- Replaced standalone HTML with admin layout extension and adjusted sizing -->
-    <!-- Header Section -->
-    <div class="mb-6 text-center">
-        <div class="inline-flex items-center justify-center w-12 h-12 bg-primary-amber rounded-lg mb-3">
-            <i class="fas fa-edit text-white text-lg"></i>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Edit Challenge</h1>
-        <p class="text-gray-600 text-sm">Perbarui informasi challenge yang sudah ada</p>
-    </div>
-
-    <!-- Main Form Card -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-primary-amber to-orange-500 p-4">
+        <!-- Header -->
+        <div
+            class="bg-gradient-to-r from-primary-amber to-orange-500 p-4 rounded-t-xl flex justify-between items-center">
             <h2 class="text-lg font-semibold text-white flex items-center">
                 <i class="fas fa-edit mr-2"></i>
-                Form Edit Challenge
+                Edit Challenge
             </h2>
+            <button onclick="closeEditChallenge()" class="text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
-        <form action="{{ route('admin.challenge.update', $challenge->id) }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
-            @csrf
-            @method('PUT')
+        <!-- Scrollable Form -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+            <form id="editChallengeForm" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="editChallengeId" name="id">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Judul Challenge -->
-                <div class="md:col-span-2">
+                <!-- Judul -->
+                <div>
                     <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-heading text-primary-amber mr-2"></i>
-                        Judul Challenge
+                        Judul
                     </label>
-                    <input type="text" name="judul" value="{{ old('judul', $challenge->judul) }}" 
-                        placeholder="Masukkan judul challenge yang menarik..."
-                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
-                    @error('judul') 
-                        <p class="text-sm text-red-500 mt-1 flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                        </p> 
-                    @enderror
+                    <input type="text" id="editChallengeJudul" name="judul"
+                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                               focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                               transition-all duration-300 outline-none text-sm"
+                        required>
                 </div>
 
                 <!-- Deskripsi -->
-                <div class="md:col-span-2">
+                <div>
                     <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-align-left text-primary-amber mr-2"></i>
-                        Deskripsi Challenge
+                        Deskripsi
                     </label>
-                    <textarea name="deskripsi" rows="4" 
-                        placeholder="Jelaskan detail challenge, aturan, dan cara berpartisipasi..."
-                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none resize-none text-sm">{{ old('deskripsi', $challenge->deskripsi) }}</textarea>
-                    @error('deskripsi') 
-                        <p class="text-sm text-red-500 mt-1 flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                        </p> 
-                    @enderror
+                    <textarea id="editChallengeDeskripsi" name="deskripsi"
+                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                               focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                               transition-all duration-300 outline-none text-sm"></textarea>
+                </div>
+
+                <!-- Poin -->
+                <div>
+                    <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-star text-primary-amber mr-2"></i>
+                        Poin
+                    </label>
+                    <input type="number" id="editChallengePoin" name="poin"
+                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                               focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                               transition-all duration-300 outline-none text-sm"
+                        required>
                 </div>
 
                 <!-- Deadline -->
@@ -66,99 +64,24 @@
                         <i class="fas fa-calendar-alt text-primary-amber mr-2"></i>
                         Deadline
                     </label>
-                    <input type="date" name="deadline" value="{{ old('deadline', $challenge->deadline) }}"
-                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
-                    @error('deadline') 
-                        <p class="text-sm text-red-500 mt-1 flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                        </p> 
-                    @enderror
+                    <input type="date" id="editChallengeDeadline" name="deadline"
+                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 
+                               focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 
+                               transition-all duration-300 outline-none text-sm"
+                        required>
                 </div>
 
-                <!-- Poin/XP -->
-                <div>
-                    <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-star text-primary-amber mr-2"></i>
-                        Poin / XP
-                    </label>
-                    <input type="number" name="poin" value="{{ old('poin', $challenge->poin) }}" 
-                        placeholder="100"
-                        class="w-full px-3 py-2.5 rounded-lg border-2 border-gray-200 focus:border-primary-amber focus:ring-2 focus:ring-primary-amber/20 transition-all duration-300 outline-none text-sm">
-                    @error('poin') 
-                        <p class="text-sm text-red-500 mt-1 flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                        </p> 
-                    @enderror
+                <!-- Action Buttons -->
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeEditChallenge()" class="px-4 py-2 bg-gray-200 rounded-lg">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2 rounded-lg bg-gradient-to-r from-primary-amber to-orange-500 text-white">
+                        Simpan Perubahan
+                    </button>
                 </div>
-
-                <!-- Reward Badge -->
-                <div class="md:col-span-2">
-                    <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-medal text-primary-amber mr-2"></i>
-                        Reward Badge
-                    </label>
-                    
-                    @if($challenge->badge)
-                        <div class="mb-3 p-3 bg-gray-50 rounded-lg">
-                            <p class="text-xs text-gray-600 mb-2">Badge saat ini:</p>
-                            <img src="{{ asset('storage/'.$challenge->badge) }}" alt="Current Badge" 
-                                class="w-16 h-16 object-cover rounded-lg shadow-sm">
-                        </div>
-                    @endif
-                    
-                    <div class="relative">
-                        <input type="file" name="badge" id="badge-upload" accept="image/*"
-                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        <div class="w-full px-4 py-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-amber transition-colors duration-300 text-center">
-                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                            <p class="text-gray-600 text-sm">Klik untuk upload badge baru atau drag & drop</p>
-                            <p class="text-xs text-gray-400 mt-1">PNG, JPG, GIF hingga 2MB (opsional)</p>
-                        </div>
-                    </div>
-                    @error('badge') 
-                        <p class="text-sm text-red-500 mt-1 flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                        </p> 
-                    @enderror
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-                <a href="{{ route('admin.challenge.index') }}"
-                    class="px-4 py-2.5 rounded-lg border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 text-center font-medium text-sm">
-                    <i class="fas fa-times mr-2"></i>Batal
-                </a>
-                <button type="submit"
-                    class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary-amber to-orange-500 text-white hover:from-orange-500 hover:to-primary-amber transition-all duration-300 font-semibold shadow-md hover:shadow-lg text-sm">
-                    <i class="fas fa-save mr-2"></i>Perbarui Challenge
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
-
-<script>
-    // File upload preview
-    document.getElementById('badge-upload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.createElement('img');
-                preview.src = e.target.result;
-                preview.className = 'w-16 h-16 object-cover rounded-lg mx-auto mt-2';
-                
-                const container = e.target.parentElement.querySelector('div');
-                container.innerHTML = `
-                    <i class="fas fa-check-circle text-3xl text-green-500 mb-2"></i>
-                    <p class="text-green-600 font-medium text-sm">Badge baru berhasil dipilih</p>
-                    <p class="text-xs text-gray-500">${file.name}</p>
-                `;
-                container.appendChild(preview);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
-@endsection

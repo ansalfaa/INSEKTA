@@ -10,7 +10,7 @@
     <!-- Body -->
     <div class="p-6 space-y-4">
         <p class="text-gray-700">
-            Yakin ingin menghapus user 
+            Yakin ingin menghapus user
             <span class="font-semibold text-amber-600" id="deleteUsername">username</span>?
         </p>
     </div>

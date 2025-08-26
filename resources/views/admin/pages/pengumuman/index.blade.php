@@ -215,6 +215,5 @@
                 }, 500); // 0.5 detik setelah berhenti ngetik baru jalan
             });
         }
-
     </script>
 @endpush

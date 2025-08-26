@@ -51,11 +51,12 @@
                 <p class="text-gray-600 mt-1">Kelola semua pengguna sistem INSEKTA dengan mudah.</p>
             </div>
             <div class="mt-4 sm:mt-0">
-                <button onclick="openUserModal()"
+                <button onclick="openCreateUser()"
                     class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-amber to-orange-500 text-white rounded-lg shadow hover:from-orange-500 hover:to-primary-amber transition-all duration-300">
                     <i class="fas fa-user-plus mr-2"></i>
                     Tambah User
                 </button>
+
             </div>
         </div>
 
@@ -171,7 +172,7 @@
                         </select>
                     </div>
                 </div>
-            </div>
+        </div>
 
         {{-- Tabel Data (desktop & tablet) --}}
         <div class="hidden sm:block bg-white rounded-xl shadow border border-gray-100">
@@ -331,35 +332,106 @@
     </div>
 
 
-    {{-- Modal Create --}}
+    {{-- Modal Create User --}}
     <div id="createUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
         @include('admin.pages.users.create')
     </div>
 
+
     {{-- Modal Edit --}}
-    <div id="editUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div id="editUserModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
         @include('admin.pages.users.edit')
+        {{-- EnD Edit --}}
     </div>
 
     {{-- Modal Edit --}}
-    <div id="deleteUserModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div id="deleteUserModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
         @include('admin.pages.users.delete')
+        {{-- EnD Delete --}}
     </div>
 
 @endsection
 
 @push('scripts')
     <script>
-        // Modal Create
-        function openUserModal() {
-            document.getElementById('createUserModal').classList.remove('hidden');
-            document.getElementById('createUserModal').classList.add('flex');
-        }
+        // function openCreateUser() {
+        //     // buka modal create
+        //     document.getElementById('createUserModal').classList.remove('hidden');
+        //     document.getElementById('createUserModal').classList.add('flex');
 
-        function closeUserModal() {
-            document.getElementById('createUserModal').classList.add('hidden');
-            document.getElementById('createUserModal').classList.remove('flex');
+        //     // default: sembunyikan field guru & siswa
+        //     document.getElementById('guru-fields-create')?.classList.add('hidden');
+        //     document.getElementById('siswa-fields-create')?.classList.add('hidden');
+
+        //     // kalau user memilih role, tampilkan field sesuai
+        //     const roleSelect = document.getElementById('createRole');
+        //     if (roleSelect) {
+        //         roleSelect.addEventListener('change', function() {
+        //             if (this.value == 3) {
+        //                 // role guru
+        //                 document.getElementById('guru-fields-create').classList.remove('hidden');
+        //                 document.getElementById('siswa-fields-create').classList.add('hidden');
+        //             } else if (this.value == 4) {
+        //                 // role siswa
+        //                 document.getElementById('siswa-fields-create').classList.remove('hidden');
+        //                 document.getElementById('guru-fields-create').classList.add('hidden');
+        //             } else {
+        //                 // role lain
+        //                 document.getElementById('guru-fields-create').classList.add('hidden');
+        //                 document.getElementById('siswa-fields-create').classList.add('hidden');
+        //             }
+        //         });
+        //     }
+        // }
+
+        // function closeCreateModal() {
+        //     document.getElementById('createUserModal').classList.add('hidden');
+        //     document.getElementById('createUserModal').classList.remove('flex');
+        // }
+
+        function openCreateUser() {
+        toggleModal('createUserModal', true);
+
+        // default: sembunyikan field guru & siswa
+        document.getElementById('guru-fields-create')?.classList.add('hidden');
+        document.getElementById('siswa-fields-create')?.classList.add('hidden');
+
+        // kalau user memilih role, tampilkan field sesuai
+        const roleSelect = document.getElementById('createRole');
+        if (roleSelect) {
+            roleSelect.addEventListener('change', function() {
+                if (this.value == 3) {
+                    // role guru
+                    document.getElementById('guru-fields-create').classList.remove('hidden');
+                    document.getElementById('siswa-fields-create').classList.add('hidden');
+                } else if (this.value == 4) {
+                    // role siswa
+                    document.getElementById('siswa-fields-create').classList.remove('hidden');
+                    document.getElementById('guru-fields-create').classList.add('hidden');
+                } else {
+                    // role lain
+                    document.getElementById('guru-fields-create').classList.add('hidden');
+                    document.getElementById('siswa-fields-create').classList.add('hidden');
+                }
+            });
         }
+    }
+
+    function closeCreateUser() {
+        toggleModal('createUserModal', false);
+    }
+
+    // helper umum biar sama dengan pengumuman
+    function toggleModal(id, show) {
+        const modal = document.getElementById(id);
+        if (show) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        } else {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
 
         // Modal Edit 
         function openEditModal(user) {
@@ -369,6 +441,10 @@
             document.getElementById('editRole').value = user.role_id;
 
             document.getElementById('editUserForm').action = '/admin/users/' + user.id;
+            // const editUserForm = document.getElementById('editUserForm').action
+
+            // console.log(editUserForm);
+
 
             if (user.role_id == 3) {
                 document.getElementById('guru-fields-edit').classList.remove('hidden');
@@ -386,6 +462,10 @@
             } else {
                 document.getElementById('siswa-fields-edit').classList.add('hidden');
             }
+
+
+            // console.table(user);
+
 
             document.getElementById('editUserModal').classList.remove('hidden');
             document.getElementById('editUserModal').classList.add('flex');
